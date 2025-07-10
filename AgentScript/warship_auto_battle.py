@@ -38,11 +38,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 奖励识别区域定义
 REWARD_REGIONS = {
-    "dollar_base": (1060, 383, 1187, 412),      # 美元奖励
-    "dollar_extra": (1477, 382, 1592, 412),    # 美元额外奖励
-    "gold_base": (1335, 382, 1375, 410),       # 黄金奖励
-    "gold_extra": (1749, 382, 1777, 410),      # 黄金额外奖励
-    "vip_check": (1482, 425, 1519, 465)        # VIP状态检查区域
+    "dollar_base": (1050, 383, 1177, 412),      # 美元奖励
+    "dollar_extra": (1457, 382, 1572, 412),    # 美元额外奖励
+    "gold_base": (1315, 382, 1355, 410),       # 黄金奖励
+    "gold_extra": (1729, 382, 1757, 410),      # 黄金额外奖励
+    "vip_check": (1468, 425, 1505, 465)        # VIP状态检查区域
 }
 
 class ImageMatcher:
@@ -144,7 +144,7 @@ class ImageMatcher:
             
             # 根据游戏模式进行不同的检测
             if self.game_mode == "occupation":
-                # 护航模式：检测防守和进攻
+                # 占领模式：检测防守和进攻
                 # 检测防守模式
                 is_defense, _ = self.match_template(screen, "fangshou.png", detection_region, 0.7)
                 if is_defense:
@@ -395,7 +395,7 @@ class AutoBattleWorker(QThread):
                     if state == "main_page":
                         self.handle_main_page()
                     elif state == "fighting_defense":
-                        # 只有护航模式才处理防守状态
+                        # 只有占领模式才处理防守状态
                         if self.game_mode == "occupation":
                             self.handle_defense_mode()
                         else:
@@ -1141,7 +1141,7 @@ class MainWindow(QMainWindow):
         mode_group = QGroupBox("游戏模式")
         mode_layout = QHBoxLayout(mode_group)
         
-        self.occupation_mode_radio = QRadioButton("护航模式")
+        self.occupation_mode_radio = QRadioButton("占领模式")
         self.occupation_mode_radio.setChecked(self.config.get("game_mode", "occupation") == "occupation")
         mode_layout.addWidget(self.occupation_mode_radio)
         
@@ -1149,7 +1149,7 @@ class MainWindow(QMainWindow):
         self.multi_team_mode_radio.setChecked(self.config.get("game_mode", "occupation") == "multi_team")
         mode_layout.addWidget(self.multi_team_mode_radio)
         
-        mode_layout.addWidget(QLabel("说明: 护航模式包含进攻/防守，多队混战只有战斗状态"))
+        mode_layout.addWidget(QLabel("说明: 占领模式包含进攻/防守，多队混战只有战斗状态"))
         mode_layout.addStretch()
         
         main_layout.addWidget(mode_group)
@@ -1302,7 +1302,7 @@ class MainWindow(QMainWindow):
             "smart_view_delay": 2.0,
             "auto_fire_enabled": False,
             "auto_fire_delay": 30,
-            "game_mode": "occupation"  # 默认为护航模式
+            "game_mode": "occupation"  # 默认为占领模式
         }
     
     def save_config(self):
@@ -1510,7 +1510,7 @@ class MainWindow(QMainWindow):
             # 多队混战模式：battle_count * 23/30
             estimated_liver_pool = stats["battle_count"] * (23.0 / 30.0)
         else:
-            # 护航模式：每2场战斗约等于1次肝池抽取
+            # 占领模式：每2场战斗约等于1次肝池抽取
             estimated_liver_pool = stats["battle_count"] / 2.0
         self.total_liver_pool_label.setText("{:.1f}".format(estimated_liver_pool))
         
@@ -1549,7 +1549,7 @@ class MainWindow(QMainWindow):
                     # 多队混战模式：每小时循环数 * 23/30
                     liver_pool_per_hour = cycles_per_hour * (23.0 / 30.0)
                 else:
-                    # 护航模式：每小时循环数 / 2
+                    # 占领模式：每小时循环数 / 2
                     liver_pool_per_hour = cycles_per_hour / 2.0
                 
                 self.dollar_per_hour_label.setText("{:,}".format(dollar_per_hour))
