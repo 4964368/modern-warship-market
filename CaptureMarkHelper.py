@@ -17,10 +17,30 @@ save_file_path = "./templates/"
 pos_img_dict = "./templates/modern_warship/ResourceDictionary.py"
 
 # 动作类型 1=截图  2=标点  3=标线（取起终点组成向量） 4=标记区域
-action = 2
+action = 1
 
-# 图片来源替换输入你的did
-ADBHelper.screenCapture("Y57XRWSS8PH6W84L", "home_screen.png")
+# 自动获取设备ID
+def get_device_id():
+    import subprocess
+    result = subprocess.run(['adb', 'devices'], capture_output=True, text=True)
+    if result.returncode != 0 or "List of devices attached" not in result.stdout:
+        raise RuntimeError("ADB命令执行失败或未找到设备")
+    
+    devices = []
+    for line in result.stdout.splitlines():
+        if line.strip() and not line.startswith('List of devices attached'):
+            device_id = line.split('\t')[0]
+            if device_id:
+                devices.append(device_id)
+    
+    if not devices:
+        raise RuntimeError("未检测到连接的Android设备")
+    
+    return devices[0]  # 使用第一个检测到的设备
+
+# 使用动态获取的设备ID
+device_id = get_device_id()
+ADBHelper.screenCapture(device_id, "home_screen.png")
 img_file = "./home_screen.png"
 
 
@@ -346,7 +366,7 @@ if not os.path.exists(save_file_path):
 # 截图保存到templates目录
 try:
     screen_path = save_file_path + "home_screen.png"
-    ADBHelper.screenCapture("Y57XRWSS8PH6W84L", screen_path)
+    ADBHelper.screenCapture(device_id, screen_path)
     if os.path.exists(screen_path):
         img_file = screen_path
         print(f"截图已保存到: {img_file}")
